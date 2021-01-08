@@ -1,15 +1,67 @@
-import React from 'react';
+import React, { useRef, useContext } from 'react';
+import { useDrag, useDrop } from 'react-dnd'
+
+import BoardContext from '../Board/context';
 
 import { Container, Label } from './styles';
 
-export default function Card() {
+export default function Card({ data, index, listIndex }) {
+  const ref = useRef();
+  const { move } = useContext(BoardContext);
+
+  const [{ isDragging }, dragRef] = useDrag({
+    item: { type: 'CARD', index, listIndex },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  // Don't need the props, just refs
+  const [, dropRef] = useDrop({
+    accept: 'CARD',
+    hover(item, monitor) {
+      const draggedListIndex = item.listIndex;
+      const targetListIndex = listIndex;
+
+      const draggedIndex = item.index;
+      const targetIndex = index;
+
+      if (draggedIndex === targetIndex && draggedListIndex === targetListIndex) {
+        return;
+      }
+
+      const targetSize = ref.current.getBoundingClientRect();
+      const targetCenter = (targetSize.bottom - targetSize.top) / 2;
+
+      const draggedOffset = monitor.getClientOffset();
+      const draggedTop = draggedOffset.y - targetSize.top;
+
+      // Do nothing if you drag a card to the beggining of next card
+      if (draggedIndex < targetIndex && draggedTop < targetCenter) {
+        return;
+      }
+
+      // Do nothing if you drag a card to the end of previous card
+      if (draggedIndex > targetIndex && draggedTop > targetCenter) {
+        return;
+      }
+
+      move(draggedListIndex, targetListIndex, draggedIndex, targetIndex);
+
+      item.index = targetIndex;
+      item.listIndex = targetListIndex;
+    }
+  });
+
+  dragRef(dropRef(ref));
+
   return (
-    <Container>
+    <Container ref={ref} isDragging={isDragging}>
       <header>
-        <Label color="#7159c1" />
+        {data.labels.map(label => <Label key={label} color={label} />)}
       </header>
-      <p>Create React component for button</p>
-      <img src="https://avatars1.githubusercontent.com/u/45835631?s=460&u=478bcb878c00650819d8319d9df5b84e2ebd79e8&v=4"/>
+      <p>{data.content}</p>
+      { data.user && <img src={data.user}/>}
     </Container>
   );
 }

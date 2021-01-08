@@ -7,6 +7,8 @@ export const Container = styled.div`
   // Avoid the element to grow or shrink and determine a base value
   // flex: flex-grow | flex-shrink | flex-basis
   flex: 0 0 320px;
+  opacity: ${props => props.done ? 0.6 : 1};
+
 
   // style all div that has another div before
   & + div {
