@@ -39,7 +39,7 @@ const SellerInfo: React.FC = () => {
         <ReputionRow>
           <div>
             <strong>561</strong>
-            <span>Vendas nos últimos 4 meses</span>
+            <span>vendas nos últimos 4 meses</span>
           </div>
 
           <div>
@@ -53,7 +53,7 @@ const SellerInfo: React.FC = () => {
             <strong>
               <ClockIcon />
             </strong>
-            <span>Vendas nos últimos meses</span>
+            <span>vendas nos últimos meses</span>
           </div>
         </ReputionRow>
       </ReputionCard>
